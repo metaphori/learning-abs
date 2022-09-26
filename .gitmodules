@@ -1,0 +1,3 @@
+[submodule ".vscode/extensions/abs-vs-code"]
+	path = .vscode/extensions/abs-vs-code
+	url = https://github.com/abstools/abs-vs-code
