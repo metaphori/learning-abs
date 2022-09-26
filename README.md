@@ -12,4 +12,6 @@ $ java -cp gen/:lib/absfrontend.jar Hello.Main
 $ java -jar lib/absfrontend.jar -e src/hello-world/hello.abs # Output goes to gen/erl
 ./gen/erl/run
 # Hello World!
+
+./gen/erl/run -P 8080 # cf Model API
 ```

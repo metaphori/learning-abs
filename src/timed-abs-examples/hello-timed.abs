@@ -1,0 +1,20 @@
+module HelloTimed;
+
+interface I {
+    Unit m();
+}
+
+class C implements I {
+    Unit m() {
+        Duration d1 = deadline(); // 10
+        println("Deadline before await(2,2): " + toString(durationValue(d1)));
+        await duration(2, 2);
+        Duration d2 = deadline(); // 8
+        println("Deadline  after await(2,2): " + toString(durationValue(d2)));
+    }
+}
+
+{
+    I o = new C();
+    [Deadline: Duration(10)] await o!m();
+}
