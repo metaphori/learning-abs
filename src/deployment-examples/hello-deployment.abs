@@ -2,12 +2,17 @@ module HelloDeployment;
 import * from ABS.DC;
 
 interface I {
-    Unit m(String s);
+    [HTTPCallable] Unit m(String s);
+    Unit sleep(Rat r);
 }
 
 class C implements I {
     Unit m(String s) {
         [Cost: strlen(s)] println("Hello world! " + s);
+    }
+
+    Unit sleep(Rat r) {
+        [Cost: r] await duration(r);
     }
 }
 
@@ -18,14 +23,14 @@ class C implements I {
             Pair(Speed, 5),     // consumed by statements annotated with [Cost: K]
             Pair(Bandwidth, 10) // consumed by method calls/returns among different DCs
         ]);
-    DC host2 = new DeploymentComponent("Host1", 
+    DC host2 = new DeploymentComponent("Host2", 
         map[Pair(Cores,1),
             Pair(Memory,0),
             Pair(Speed, 2),
             Pair(Bandwidth, 5)
         ]);
-    [DC: host1] I o1 = new C();
-    [DC: host2] I o2 = new C();
+    [DC: host1, HTTPName: "o1"] I o1 = new C();
+    [DC: host2, HTTPName: "o2"] I o2 = new C();
     Time t1 = now();
     [DataSize: 50] o1!m("one");
     Time t2 = now();
@@ -34,4 +39,6 @@ class C implements I {
     [DataSize: 20] await o2!m("two three four five");
     t2 = now();
     println("o2!m on host2: " + toString(timeDifference(t2, t1)) + " seconds elapsed.");
+    // o1!sleep(100);
+    // o2!sleep(2000);
 }
