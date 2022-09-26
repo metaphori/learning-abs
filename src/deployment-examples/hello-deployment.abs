@@ -7,14 +7,31 @@ interface I {
 
 class C implements I {
     Unit m(String s) {
-        println("Hello world! " + s);
+        [Cost: strlen(s)] println("Hello world! " + s);
     }
 }
 
 {
-    DC host1 = new DeploymentComponent("Host1", map[Pair(Cores,1)]);
+    DC host1 = new DeploymentComponent("Host1", 
+        map[Pair(Cores,1),      // num of cores (used only for static deployment modelling)
+            Pair(Memory,0),     // as a measure of what/which COGs can be created on a DC
+            Pair(Speed, 5),     // consumed by statements annotated with [Cost: K]
+            Pair(Bandwidth, 10) // consumed by method calls/returns among different DCs
+        ]);
+    DC host2 = new DeploymentComponent("Host1", 
+        map[Pair(Cores,1),
+            Pair(Memory,0),
+            Pair(Speed, 2),
+            Pair(Bandwidth, 5)
+        ]);
     [DC: host1] I o1 = new C();
-    [DC: host1] I o2 = new C();
-    o1!m("one");
-    await o2!m("two");
+    [DC: host2] I o2 = new C();
+    Time t1 = now();
+    [DataSize: 50] o1!m("one");
+    Time t2 = now();
+    println("o1!m on host1: " + toString(timeDifference(t2, t1)) + " seconds elapsed.");
+    t1 = now();
+    [DataSize: 20] await o2!m("two three four five");
+    t2 = now();
+    println("o2!m on host2: " + toString(timeDifference(t2, t1)) + " seconds elapsed.");
 }
