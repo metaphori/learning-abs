@@ -1,0 +1,20 @@
+module HelloDeployment;
+import * from ABS.DC;
+
+interface I {
+    Unit m(String s);
+}
+
+class C implements I {
+    Unit m(String s) {
+        println("Hello world! " + s);
+    }
+}
+
+{
+    DC host1 = new DeploymentComponent("Host1", map[Pair(Cores,1)]);
+    [DC: host1] I o1 = new C();
+    [DC: host1] I o2 = new C();
+    o1!m("one");
+    await o2!m("two");
+}
